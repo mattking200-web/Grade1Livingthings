@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Living Things - Grade 1 Science</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif; }
+  body { background: linear-gradient(135deg, #a8e6cf 0%, #ffd3b6 50%, #ffaaa5 100%); min-height: 100vh; padding: 10px; color: #333; }
+  header { background: white; border-radius: 20px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 15px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; text-align: center; }
+  .header-text { flex: 1 1 260px; min-width: 0; }
+  h1 { color: #2d6a4f; font-size: 2em; }
+  .subtitle { color: #666; font-size: 1em; margin-top: 5px; }
+  .header-buttons { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .toggle-btn { flex: 0 0 auto; border: 3px solid; border-radius: 50px; padding: 10px 16px; font-size: 0.95em; cursor: pointer; font-weight: bold; transition: transform 0.2s; }
+  .toggle-btn:hover { transform: scale(1.05); }
+  .toggle-btn.off { opacity: 0.5; }
+  #ttsToggle { background: #ffd166; border-color: #f4a261; }
+  #sfxToggle { background: #06d6a0; border-color: #05b88a; color: white; }
+  #sfxToggle.off, #ttsToggle.off { background: #ddd; border-color: #999; color: #666; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+  .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; padding: 10px; }
+  .menu-card { background: white; border-radius: 20px; padding: 20px; text-align: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s, box-shadow 0.2s; border: 4px solid transparent; }
+  .menu-card:hover, .menu-card:focus-visible { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.2); border-color: #06d6a0; outline: none; }
+  .menu-card .emoji { font-size: 3em; display: block; margin-bottom: 10px; }
+  .menu-card .code { font-weight: bold; color: #2d6a4f; font-size: 0.9em; }
+  .menu-card .title { font-size: 1.1em; margin-top: 5px; color: #333; }
+  .menu-card .desc { font-size: 0.85em; color: #666; margin-top: 5px; }
+  .progress { margin-top: 10px; height: 10px; background: #eee; border-radius: 5px; overflow: hidden; }
+  .progress-bar { height: 100%; background: #06d6a0; transition: width 0.3s; }
+  .badges { margin-top: 8px; font-size: 0.8em; color: #555; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+  .badge { background: #f1f1f1; border-radius: 20px; padding: 2px 8px; }
+  .badge.done { background: #d4edda; color: #155724; font-weight: bold; }
+  .menu-footer { text-align: center; padding: 20px; }
+  .reset-btn { background: #fff; border: 3px solid #ef476f; color: #ef476f; border-radius: 50px; padding: 8px 18px; cursor: pointer; font-weight: bold; }
+  .activity-header { background: white; border-radius: 20px; padding: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .back-btn { background: #ef476f; color: white; border: none; border-radius: 50px; padding: 10px 20px; font-size: 1em; cursor: pointer; font-weight: bold; }
+  .activity-title { font-size: 1.3em; color: #2d6a4f; flex: 1 1 200px; text-align: center; }
+  .activity-tabs { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; justify-content: center; }
+  .tab-btn { background: white; border: 3px solid #118ab2; color: #118ab2; border-radius: 50px; padding: 10px 20px; cursor: pointer; font-weight: bold; font-size: 1em; }
+  .tab-btn.active { background: #118ab2; color: white; }
+  .activity-content { background: white; border-radius: 20px; padding: 20px; min-height: 400px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+  .learn-card { background: linear-gradient(135deg, #ffd6a5, #fdffb6); border-radius: 20px; padding: 25px; text-align: center; margin-bottom: 15px; }
+  .learn-card .big-emoji { font-size: 5em; }
+  .learn-card h2 { color: #2d6a4f; margin: 10px 0; font-size: 1.8em; }
+  .learn-card p { font-size: 1.2em; line-height: 1.5; }
+  .speak-btn { background: #ffd166; border: none; border-radius: 50px; padding: 10px 20px; font-size: 1em; cursor: pointer; margin-top: 10px; font-weight: bold; }
+  .nav-btns { display: flex; justify-content: space-between; margin-top: 15px; gap: 10px; }
+  .nav-btn { background: #06d6a0; color: white; border: none; border-radius: 50px; padding: 12px 25px; font-size: 1em; cursor: pointer; font-weight: bold; }
+  .nav-btn:disabled { background: #ccc; cursor: not-allowed; }
+  .sort-instruction { font-size: 1.2em; text-align: center; margin-bottom: 15px; color: #333; }
+  .items-to-sort { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px; min-height: 80px; padding: 10px; border: 3px dashed #dee2e6; border-radius: 15px; background: #fcfcfc; }
+  .items-to-sort.drag-over { background: #e7f5ff; border-color: #118ab2; }
+  .sort-item { background: #caf0f8; border: 3px solid #0077b6; border-radius: 15px; padding: 10px 15px; cursor: grab; font-size: 1.15em; user-select: none; transition: transform 0.15s, box-shadow 0.15s; touch-action: none; }
+  .sort-item:hover { transform: scale(1.05); }
+  .sort-item:focus-visible { outline: 4px solid #ef476f; outline-offset: 2px; }
+  .sort-item.selected { background: #ffd166; border-color: #ef476f; box-shadow: 0 0 0 5px rgba(239,71,111,0.3); transform: scale(1.07); }
+  .sort-item.dragging { opacity: 0.35; }
+  .drag-ghost { position: fixed; z-index: 9999; pointer-events: none; transform: translate(-50%, -50%) scale(1.1); background: #ffd166; border: 3px solid #ef476f; border-radius: 15px; padding: 10px 15px; font-size: 1.15em; box-shadow: 0 6px 14px rgba(0,0,0,0.3); white-space: nowrap; }
+  .sort-bins { display: grid; gap: 15px; }
+  .sort-bins.bins-2 { grid-template-columns: 1fr 1fr; }
+  .sort-bins.bins-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .sort-bin { background: #f8f9fa; border: 4px dashed #adb5bd; border-radius: 20px; padding: 15px; min-height: 150px; text-align: center; cursor: pointer; }
+  .sort-bin h3 { color: #2d6a4f; margin-bottom: 10px; font-size: 1.2em; }
+  .sort-bin.drag-over, .sort-bin.armed { background: #d4edda; border-color: #06d6a0; border-style: solid; }
+  .sort-bin:focus-visible { outline: 4px solid #ef476f; outline-offset: 2px; }
+  .bin-items { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .bin-item { background: #fff; border: 2px solid #06d6a0; border-radius: 10px; padding: 6px 12px; font-size: 1em; }
+  .bin-item.wrong { background: #ffd6d6; border-color: #ef476f; }
+  .bin-item.unsorted { background: #fff3cd; border-color: #ffc107; color: #856404; }
+  .match-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; max-width: 600px; margin: 0 auto; }
+  .match-card { background: #118ab2; border-radius: 15px; padding: 18px 8px; text-align: center; cursor: pointer; min-height: 100px; display: flex; align-items: center; justify-content: center; font-size: 1.05em; color: white; font-weight: bold; transition: background 0.25s, color 0.25s; border: 3px solid transparent; }
+  .match-card.flipped { background: white; color: #333; border-color: #118ab2; }
+  .match-card.matched { background: #06d6a0; color: white; cursor: default; border-color: #06d6a0; }
+  .match-card:focus-visible { outline: 4px solid #ef476f; outline-offset: 2px; }
+  .quiz-question { font-size: 1.35em; text-align: center; margin-bottom: 20px; padding: 20px; background: #ffd6a5; border-radius: 20px; }
+  .quiz-question .q-emoji { font-size: 3em; display: block; margin-bottom: 10px; }
+  .q-count { font-size: 0.75em; color: #666; margin-top: 10px; }
+  .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 520px; margin: 0 auto; }
+  .quiz-option { background: #caf0f8; border: 3px solid #0077b6; border-radius: 15px; padding: 20px; font-size: 1.15em; cursor: pointer; text-align: center; transition: transform 0.15s, background 0.15s; }
+  .quiz-option:hover { transform: scale(1.03); background: #90e0ef; }
+  .quiz-option:focus-visible { outline: 4px solid #ef476f; outline-offset: 2px; }
+  .quiz-option.correct { background: #06d6a0; color: white; border-color: #06d6a0; }
+  .quiz-option.wrong { background: #ef476f; color: white; border-color: #ef476f; }
+  .quiz-option.locked { cursor: default; }
+  .quiz-option.locked:hover { transform: none; }
+  .feedback { text-align: center; font-size: 1.2em; margin-top: 20px; padding: 15px 20px; border-radius: 15px; font-weight: bold; line-height: 1.4; }
+  .feedback.good { background: #d4edda; color: #155724; }
+  .feedback.bad { background: #f8d7da; color: #721c24; font-weight: normal; }
+  .feedback .fb-title { font-weight: bold; display: block; margin-bottom: 6px; font-size: 1.15em; }
+  .feedback .fb-explain { font-size: 0.95em; font-weight: normal; display: block; margin-bottom: 10px; }
+  .feedback .fb-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+  .score-box { text-align: center; padding: 30px; background: linear-gradient(135deg, #ffd166, #06d6a0); border-radius: 20px; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.35); }
+  .score-box h2 { font-size: 2em; margin-bottom: 10px; }
+  .score-box .score-num { font-size: 3em; font-weight: bold; margin: 15px 0; }
+  .tf-buttons { display: flex; gap: 20px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+  .tf-btn { padding: 20px 40px; font-size: 1.3em; border-radius: 15px; border: 3px solid; cursor: pointer; font-weight: bold; min-width: 130px; }
+  .tf-true { background: #d4edda; border-color: #06d6a0; color: #155724; }
+  .tf-false { background: #f8d7da; border-color: #ef476f; color: #721c24; }
+  .tf-btn:disabled { opacity: 0.6; cursor: default; }
+  .hover-speaks { position: relative; }
+  @media (hover: hover) and (pointer: fine) { .hover-speaks::after { content: "🔊"; position: absolute; top: 4px; right: 7px; font-size: 0.75em; opacity: 0.45; pointer-events: none; } }
+  @media (max-width: 600px) { h1 { font-size: 1.5em; } header { flex-direction: column; } .header-buttons { width: 100%; justify-content: center; } .toggle-btn { flex: 1 1 auto; max-width: 180px; } .quiz-options { grid-template-columns: 1fr; } .sort-bins.bins-2, .sort-bins.bins-3 { grid-template-columns: 1fr; } .activity-title { font-size: 1.1em; } }
+  @media (max-width: 400px) { body { padding: 6px; } h1 { font-size: 1.25em; } .subtitle { font-size: 0.85em; } .activity-content { padding: 14px; } .menu-grid { grid-template-columns: 1fr; padding: 4px; } .learn-card { padding: 16px; } .learn-card .big-emoji { font-size: 3.5em; } .learn-card h2 { font-size: 1.4em; } .learn-card p { font-size: 1.05em; } .match-grid { grid-template-columns: repeat(auto-fit, minmax(75px, 1fr)); gap: 7px; } .match-card { min-height: 80px; font-size: 0.85em; padding: 10px 4px; } .quiz-question { font-size: 1.1em; padding: 14px; } .quiz-option { padding: 14px; font-size: 1.05em; } .tf-btn { padding: 14px 18px; font-size: 1.1em; min-width: 110px; } .nav-btn { padding: 10px 16px; font-size: 0.95em; } .tab-btn { padding: 8px 14px; font-size: 0.9em; } .sort-item { font-size: 1em; padding: 8px 12px; } .feedback { font-size: 1.05em; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-text">
+    <h1>🌱 Living Things 🦋</h1>
+    <div class="subtitle">Grade 1 Science – Ontario Curriculum</div>
+  </div>
+  <div class="header-buttons">
+    <button id="ttsToggle" class="toggle-btn" onclick="toggleTTS()" aria-pressed="true">🔊 Read Aloud: ON</button>
+    <button id="sfxToggle" class="toggle-btn" onclick="toggleSFX()" aria-pressed="true">🎵 Sounds: ON</button>
+  </div>
+</header>
+
+<div id="menuScreen" class="screen active">
+  <div class="menu-grid" id="menuGrid"></div>
+  <div class="menu-footer">
+    <button class="reset-btn" onclick="resetAllProgress()">↺ Reset All Progress</button>
+  </div>
+</div>
+
+<div id="activityScreen" class="screen">
+  <div class="activity-header">
+    <button class="back-btn" onclick="goToMenu()">← Back</button>
+    <div class="activity-title" id="activityTitle"></div>
+  </div>
+  <div class="activity-tabs" id="activityTabs" role="tablist"></div>
+  <div class="activity-content" id="activityContent"></div>
+</div>
+
+<script>
+/* =========================================================
+   DATA
+   ========================================================= */
+const expectations = [
+  {
+    code: "A1.1", emoji: "📚", title: "Science Words",
+    description: "Learn the special words scientists use!",
+    vocab: [
+      { word: "Living Thing", emoji: "🌳", def: "A plant or animal that is alive. It grows and needs food." },
+      { word: "Non-Living", emoji: "🪨", def: "Something that is not alive, like a rock or a toy." },
+      { word: "Plant", emoji: "🌻", def: "A living thing that grows in soil and needs sunlight." },
+      { word: "Animal", emoji: "🐶", def: "A living thing that can move and needs food and water." },
+      { word: "Grow", emoji: "🌱", def: "To get bigger over time." },
+      { word: "Needs", emoji: "💧", def: "Things a living thing must have to stay alive." }
+    ],
+    quiz: [
+      { q: "Which word means something that is alive?", emoji: "🤔", options: ["Living Thing", "Rock", "Toy", "Chair"], answer: 0, feedback: "A living thing is alive. It grows, moves, and needs food!" },
+      { q: "A dog is a kind of...", emoji: "🐕", options: ["Plant", "Animal", "Rock", "Toy"], answer: 1, feedback: "Dogs can move, eat food, and grow. That makes them animals!" },
+      { q: "What does 'grow' mean?", emoji: "🌱", options: ["To sleep", "To get bigger", "To eat", "To run"], answer: 1, feedback: "Growing means getting bigger over time, like you do every year!" },
+      { q: "A rock is an example of something...", emoji: "🪨", options: ["Living", "Non-Living", "Growing", "Hungry"], answer: 1, feedback: "Rocks don't grow, eat, or need water. They are non-living." },
+      { q: "What do all living things have?", emoji: "💧", options: ["Needs", "Wheels", "Batteries", "Screens"], answer: 0, feedback: "Every living thing needs water, food, air, and shelter to stay alive." },
+      { q: "Which of these is a plant?", emoji: "🌻", options: ["A tree", "A dog", "A car", "A rock"], answer: 0, feedback: "Trees grow in soil, need sunlight, and make their own food. They are plants!" }
+    ]
+  },
+  {
+    code: "A1.2", emoji: "👀", title: "Use Your Senses",
+    description: "Explore living things with your 5 senses!",
+    vocab: [
+      { word: "See", emoji: "👁️", def: "Use your eyes to look at colors, shapes, and sizes." },
+      { word: "Hear", emoji: "👂", def: "Use your ears to listen to birds, bugs, and leaves." },
+      { word: "Smell", emoji: "👃", def: "Use your nose to smell flowers and plants." },
+      { word: "Touch", emoji: "✋", def: "Use your hands to feel fur, leaves, and bark." },
+      { word: "Taste", emoji: "👅", def: "Use your tongue to taste fruits and veggies. Only with grown-up permission!" }
+    ],
+    quiz: [
+      { q: "Which sense do you use to see a butterfly's colors?", emoji: "🦋", options: ["Hear", "See", "Smell", "Touch"], answer: 1, feedback: "Your eyes help you see colors and shapes, like a butterfly's wings!" },
+      { q: "Which sense helps you hear a bird sing?", emoji: "🐦", options: ["See", "Touch", "Hear", "Taste"], answer: 2, feedback: "Your ears help you listen to sounds, like a bird singing!" },
+      { q: "You smell a flower with your...", emoji: "🌸", options: ["Eyes", "Ears", "Nose", "Hands"], answer: 2, feedback: "Your nose helps you smell things, like a pretty flower!" },
+      { q: "Which sense helps you feel if a leaf is smooth or rough?", emoji: "✋", options: ["Taste", "Hear", "Touch", "See"], answer: 2, feedback: "Your hands help you feel if something is smooth, rough, soft, or hard." },
+      { q: "How many senses do humans use to explore the world?", emoji: "🖐️", options: ["Two", "Three", "Four", "Five"], answer: 3, feedback: "We have five senses: see, hear, smell, touch, and taste!" },
+      { q: "You use your tongue to...", emoji: "👅", options: ["Hear", "Smell", "Taste", "See"], answer: 2, feedback: "Your tongue helps you taste food. Always ask a grown-up first!" }
+    ]
+  },
+  {
+    code: "A1.3", emoji: "🗂️", title: "Sort Living Things",
+    description: "Sort things into living and non-living!",
+    vocab: [
+      { word: "Sort", emoji: "🗂️", def: "To put things into groups that are alike." },
+      { word: "Classify", emoji: "📋", def: "To sort things by what they have in common." }
+    ],
+    sortGame: {
+      items: [
+        { name: "🌳 Tree", living: true }, { name: "🪨 Rock", living: false },
+        { name: "🐝 Bee", living: true }, { name: "🚗 Car", living: false },
+        { name: "🌹 Rose", living: true }, { name: "📱 Phone", living: false },
+        { name: "🐢 Turtle", living: true }, { name: "🧸 Teddy", living: false }
+      ]
+    },
+    quiz: [
+      { q: "Is a flower living or non-living?", emoji: "🌼", options: ["Living", "Non-Living"], answer: 0, feedback: "Flowers grow, need water, and make seeds. They are living!" },
+      { q: "Is a teddy bear living or non-living?", emoji: "🧸", options: ["Living", "Non-Living"], answer: 1, feedback: "Teddy bears don't grow or need food. They are non-living." },
+      { q: "Is a fish living or non-living?", emoji: "🐟", options: ["Living", "Non-Living"], answer: 0, feedback: "Fish swim, eat food, and grow. They are living!" },
+      { q: "Is a bicycle living or non-living?", emoji: "🚲", options: ["Living", "Non-Living"], answer: 1, feedback: "Bicycles don't grow or need food. They are non-living." },
+      { q: "Which of these is a living thing?", emoji: "🔍", options: ["A worm", "A pencil", "A shoe", "A ball"], answer: 0, feedback: "Worms wiggle, eat tiny bits of dead leaves, and grow. They are living!" },
+      { q: "Which of these is non-living?", emoji: "🔍", options: ["A river stone", "A cat", "A tree", "A bug"], answer: 0, feedback: "Stones don't grow or need food. They are non-living." }
+    ]
+  },
+  {
+    code: "A1.4", emoji: "💧", title: "Needs of Living Things",
+    description: "What do living things need to stay alive?",
+    vocab: [
+      { word: "Water", emoji: "💧", def: "All living things need water to live." },
+      { word: "Food", emoji: "🍎", def: "Living things need food for energy." },
+      { word: "Air", emoji: "💨", def: "Living things need air." },
+      { word: "Shelter", emoji: "🏠", def: "A safe place to live and grow." }
+    ],
+    quiz: [
+      { q: "What do ALL living things need?", emoji: "🤔", options: ["Toys", "Water", "TV", "Candy"], answer: 1, feedback: "Every living thing needs water to stay alive, from tiny bugs to big elephants!" },
+      { q: "Which is NOT something living things need?", emoji: "❌", options: ["Air", "Food", "Video Games", "Water"], answer: 2, feedback: "Living things need air, food, and water. They don't need video games!" },
+      { q: "A shelter is...", emoji: "🏡", options: ["A toy", "A safe place to live", "A food", "A drink"], answer: 1, feedback: "A shelter is a safe place to live, like a bird's nest or your home!" },
+      { q: "Why do living things need food?", emoji: "🍎", options: ["For energy", "To change color", "To fly", "To sleep"], answer: 0, feedback: "Food gives living things energy to move, grow, and play!" },
+      { q: "What do living things need from the air?", emoji: "💨", options: ["Air", "Juice", "Sand", "Plastic"], answer: 0, feedback: "All living things need air, even plants!" },
+      { q: "If a plant does not get water, it will...", emoji: "🥀", options: ["Dry up", "Grow faster", "Fly away", "Turn into a rock"], answer: 0, feedback: "Without water, a plant dries up and can't grow." }
+    ]
+  },
+  {
+    code: "A1.5", emoji: "🌻", title: "Plant & Animal Needs",
+    description: "What do plants and animals need?",
+    vocab: [
+      { word: "Sunlight", emoji: "☀️", def: "Plants need sunlight to grow." },
+      { word: "Soil", emoji: "🌱", def: "Plants grow in soil." },
+      { word: "Space", emoji: "🌍", def: "Plants and animals need room to grow." }
+    ],
+    matchGame: [
+      { a: "🌻 Plant", b: "☀️ Sunlight" },
+      { a: "🐿️ Squirrel", b: "🌰 Nuts" },
+      { a: "🌵 Cactus", b: "🏜️ Dry soil" },
+      { a: "🐠 Fish", b: "💧 Water" }
+    ],
+    quiz: [
+      { q: "What do plants need to grow?", emoji: "🌱", options: ["Toys", "Sunlight", "TV", "Candy"], answer: 1, feedback: "Plants use sunlight to make their own food. They need it to grow!" },
+      { q: "Where do most plants grow?", emoji: "🌿", options: ["In the sky", "In soil", "In a box", "On the moon"], answer: 1, feedback: "Most plants grow in soil. It holds them up and gives them water!" },
+      { q: "What does a squirrel need?", emoji: "🐿️", options: ["Sunlight only", "Food and water", "Toys", "Books"], answer: 1, feedback: "Squirrels are animals. They need food and water to live!" },
+      { q: "What do plants use to make their own food?", emoji: "☀️", options: ["Sunlight", "Crayons", "Music", "Blankets"], answer: 0, feedback: "Plants use sunlight, water, and air to make their own food!" },
+      { q: "Why do animals need space?", emoji: "🌍", options: ["To move and find food", "To watch TV", "To collect rocks", "To sleep all day"], answer: 0, feedback: "Animals need space to move around, find food, and build homes." },
+      { q: "Which of these is a need for a plant?", emoji: "🌻", options: ["Soil", "A bicycle", "A pillow", "A video game"], answer: 0, feedback: "Soil helps plants grow by holding their roots and giving them water." }
+    ]
+  },
+  {
+    code: "A2.1", emoji: "✨", title: "What Makes It Alive?",
+    description: "How do we know something is living?",
+    vocab: [
+      { word: "Moves", emoji: "🏃", def: "Living things can move on their own. Plants move slowly, like turning toward the sun." },
+      { word: "Grows", emoji: "📈", def: "Living things get bigger as they get older." },
+      { word: "Needs Food", emoji: "🍽️", def: "Living things need food or make their own." },
+      { word: "Reproduces", emoji: "🥚", def: "Living things can make more living things like themselves." }
+    ],
+    quiz: [
+      { q: "Which is a sign of a living thing?", emoji: "🔍", options: ["It is red", "It grows", "It is round", "It is heavy"], answer: 1, feedback: "Living things get bigger over time. That's called growing!" },
+      { q: "A car moves. Is it living?", emoji: "🚗", options: ["Yes", "No"], answer: 1, feedback: "Cars move, but they don't grow, eat, or breathe. So they're not living." },
+      { q: "A baby gets bigger. This is called...", emoji: "👶", options: ["Sleeping", "Growing", "Flying", "Singing"], answer: 1, feedback: "Babies get bigger as they get older. That's growing!" },
+      { q: "Living things can make more living things. This is called...", emoji: "🥚", options: ["Reproducing", "Driving", "Painting", "Building"], answer: 0, feedback: "Living things can make more living things, like a hen laying eggs!" },
+      { q: "Which of these can move on its own?", emoji: "🦋", options: ["A butterfly", "A chair", "A rock", "A shoe"], answer: 0, feedback: "Butterflies fly and move on their own. That's a sign they're living!" },
+      { q: "Does a living thing need food?", emoji: "🍽️", options: ["Yes", "No", "Only on Tuesdays", "Only in winter"], answer: 0, feedback: "Every living thing needs food for energy, even plants!" }
+    ]
+  },
+  {
+    code: "A2.2", emoji: "🔎", title: "Living or Non-Living?",
+    description: "Can you tell the difference?",
+    vocab: [
+      { word: "Alive", emoji: "💚", def: "Something that grows, needs food, and can move." },
+      { word: "Not Alive", emoji: "🩶", def: "Something that never grew and does not need food." }
+    ],
+    tfGame: [
+      { statement: "A mushroom is a living thing.", emoji: "🍄", answer: true },
+      { statement: "A bicycle is a living thing.", emoji: "🚲", answer: false },
+      { statement: "A frog is a living thing.", emoji: "🐸", answer: true },
+      { statement: "A cloud is a living thing.", emoji: "☁️", answer: false },
+      { statement: "A grass plant is a living thing.", emoji: "🌾", answer: true },
+      { statement: "A pencil is a living thing.", emoji: "✏️", answer: false }
+    ],
+    quiz: [
+      { q: "Which one is living?", emoji: "🤔", options: ["Chair", "Apple tree", "Book", "Ball"], answer: 1, feedback: "Apple trees grow, need water, and make apples. They are living!" },
+      { q: "Which one is non-living?", emoji: "🤔", options: ["Cat", "Flower", "Rock", "Bird"], answer: 2, feedback: "Rocks don't grow or need food. They are non-living." },
+      { q: "Is a mushroom living or non-living?", emoji: "🍄", options: ["Living", "Non-Living"], answer: 0, feedback: "Mushrooms grow from the ground. They are living!" },
+      { q: "Is a cloud living or non-living?", emoji: "☁️", options: ["Living", "Non-Living"], answer: 1, feedback: "Clouds move, but they don't grow or need food. They are non-living." },
+      { q: "Which of these is alive right now?", emoji: "🔍", options: ["A sleeping bear", "A wooden chair", "A plastic toy", "A rock"], answer: 0, feedback: "Even when sleeping, bears are alive! They breathe and will wake up." },
+      { q: "A toy robot moves and makes noise. Is it living?", emoji: "🤖", options: ["Yes", "No, it does not grow or need food"], answer: 1, feedback: "Toy robots need batteries, not food. They don't grow. Not living!" }
+    ]
+  },
+  {
+    code: "A2.3", emoji: "🐾", title: "Plant vs Animal Needs",
+    description: "How are plant needs different from animal needs?",
+    vocab: [
+      { word: "Plants make food", emoji: "🌿", def: "Plants use sunlight to make their own food." },
+      { word: "Animals eat food", emoji: "🐰", def: "Animals must find and eat food." }
+    ],
+    sortGame: {
+      items: [
+        { name: "☀️ Sunlight", living: "plant" },
+        { name: "🥕 Eating carrots", living: "animal" },
+        { name: "🌍 Soil", living: "plant" },
+        { name: "💧 Water", living: "both" },
+        { name: "💨 Air", living: "both" },
+        { name: "🐛 Bugs to eat", living: "animal" }
+      ],
+      bins: ["plant", "animal", "both"]
+    },
+    quiz: [
+      { q: "What do plants use to make their own food?", emoji: "🌱", options: ["Water", "Sunlight", "Air", "Sleep"], answer: 1, feedback: "Plants use sunlight to make food. Animals get food differently!" },
+      { q: "What do animals do to get food?", emoji: "🦁", options: ["Make it from sun", "Find and eat it", "Grow it in soil", "Drink it"], answer: 1, feedback: "Animals can't make food from sunlight. They have to find and eat it!" },
+      { q: "Where do plants get their food from?", emoji: "🌿", options: ["They make it using sunlight", "The grocery store", "The refrigerator", "Other animals"], answer: 0, feedback: "Plants use sunlight, water, and air to make their own food!" },
+      { q: "What do BOTH plants and animals need?", emoji: "💧", options: ["Water and air", "Candy and toys", "TV and games", "Shoes and hats"], answer: 0, feedback: "Both plants and animals need water and air to live!" },
+      { q: "A rabbit eats carrots. This means the rabbit is a...", emoji: "🐰", options: ["Plant", "Animal", "Rock", "Water"], answer: 1, feedback: "Rabbits eat carrots and other food. Animals must find food to eat!" },
+      { q: "A cow eats grass. How does the cow get its food?", emoji: "🐄", options: ["It finds and eats it", "It makes it from sunlight", "It grows it in soil", "It drinks it"], answer: 0, feedback: "Cows are animals, so they find and eat their food, like grass!" }
+    ]
+  },
+  {
+    code: "A2.4", emoji: "🌈", title: "Variety of Living Things",
+    description: "Living things come in many shapes and sizes!",
+    vocab: [
+      { word: "Variety", emoji: "🌈", def: "Many different kinds of things." },
+      { word: "Different", emoji: "🔀", def: "Not the same. Living things can look different." }
+    ],
+    matchGame: [
+      { a: "🐘 Elephant", b: "Big" },
+      { a: "🐜 Ant", b: "Tiny" },
+      { a: "🌲 Pine tree", b: "Tall" },
+      { a: "🍄 Mushroom", b: "Small" }
+    ],
+    quiz: [
+      { q: "Are all animals the same size?", emoji: "🐘🐜", options: ["Yes", "No"], answer: 1, feedback: "Living things come in all sizes, from tiny ants to huge elephants!" },
+      { q: "Which shows variety?", emoji: "🌈", options: ["All red balls", "Many different flowers", "One rock", "One tree"], answer: 1, feedback: "Variety means many different kinds. A garden with many flowers shows variety!" },
+      { q: "Living things can be different colours, shapes, and...", emoji: "🔀", options: ["Sizes", "Brands", "Batteries", "Plastic"], answer: 0, feedback: "Living things can be different colors, shapes, and sizes!" },
+      { q: "Are all leaves on trees the exact same shape?", emoji: "🍁", options: ["Yes", "No"], answer: 1, feedback: "Every leaf is a little different. That's the variety of nature!" },
+      { q: "Which group shows a variety of living things?", emoji: "🌍", options: ["Dogs, cats, birds, and fish", "Five red apples", "Ten identical rocks", "Three plastic chairs"], answer: 0, feedback: "Different kinds of animals show variety in the living world!" },
+      { q: "Even though living things are different, they all...", emoji: "💚", options: ["Are alive and have needs", "Are the same color", "Are the same size", "Like to play games"], answer: 0, feedback: "Even though they look different, all living things grow and have needs!" }
+    ]
+  },
+  {
+    code: "A2.5", emoji: "🐣", title: "How Living Things Change",
+    description: "Living things grow and change over time!",
+    vocab: [
+      { word: "Life Cycle", emoji: "🔄", def: "The changes a living thing goes through from birth to grown-up." },
+      { word: "Baby", emoji: "🐣", def: "A young living thing." },
+      { word: "Adult", emoji: "🐔", def: "A fully grown living thing." }
+    ],
+    matchGame: [
+      { a: "🐛 Caterpillar", b: "🦋 Butterfly" },
+      { a: "🐣 Chick", b: "🐔 Chicken" },
+      { a: "🌱 Seed", b: "🌳 Tree" },
+      { a: "🥚 Egg", b: "🐢 Turtle" }
+    ],
+    quiz: [
+      { q: "A caterpillar grows up to be a...", emoji: "🐛", options: ["Bird", "Butterfly", "Fish", "Dog"], answer: 1, feedback: "A caterpillar changes into a beautiful butterfly as it grows!" },
+      { q: "A seed grows into a...", emoji: "🌱", options: ["Rock", "Plant", "Bug", "Cloud"], answer: 1, feedback: "A tiny seed grows into a big plant with roots, stems, and leaves!" },
+      { q: "Do living things change as they grow?", emoji: "🌱🌳", options: ["Yes", "No"], answer: 0, feedback: "All living things change as they grow. You've changed since you were a baby!" },
+      { q: "The changes a living thing goes through is called its...", emoji: "🔄", options: ["Life cycle", "Bedtime", "Lunchtime", "Recess"], answer: 0, feedback: "A life cycle is all the changes a living thing goes through!" },
+      { q: "A baby animal grows up to become an...", emoji: "🐔", options: ["Adult", "Toy", "Rock", "Baby forever"], answer: 0, feedback: "A baby grows up to be a grown-up, called an adult!" },
+      { q: "Which of these shows a living thing changing?", emoji: "🐸", options: ["A tadpole turning into a frog", "A car driving", "A cloud moving", "A ball bouncing"], answer: 0, feedback: "A tadpole lives in water, then grows legs and becomes a frog!" }
+    ]
+  },
+  {
+    code: "A2.6", emoji: "🌍", title: "Caring for Living Things",
+    description: "How can we help living things?",
+    vocab: [
+      { word: "Habitat", emoji: "🏞️", def: "The natural home of a plant or animal." },
+      { word: "Protect", emoji: "🛡️", def: "To keep something safe." },
+      { word: "Care", emoji: "💚", def: "To look after something with love." }
+    ],
+    tfGame: [
+      { statement: "We should pick all the flowers in the park.", emoji: "🌷", answer: false },
+      { statement: "We can give water to a thirsty plant.", emoji: "🚿", answer: true },
+      { statement: "It's okay to litter in the forest.", emoji: "🗑️", answer: false },
+      { statement: "We should be gentle with bugs.", emoji: "🐞", answer: true },
+      { statement: "We can feed birds in winter.", emoji: "🐦", answer: true }
+    ],
+    quiz: [
+      { q: "How can we help plants?", emoji: "🌱", options: ["Cut them all", "Give them water", "Step on them", "Hide them"], answer: 1, feedback: "Plants need water to live. Giving them water helps them grow!" },
+      { q: "What is a habitat?", emoji: "🏞️", options: ["A toy", "A natural home", "A food", "A game"], answer: 1, feedback: "A habitat is where a plant or animal naturally lives, like a forest or pond!" },
+      { q: "We should treat animals with...", emoji: "🐶", options: ["Anger", "Kindness", "Fear", "Ignoring"], answer: 1, feedback: "Animals feel things too. We should be kind and gentle with them!" },
+      { q: "What should we do with trash to protect habitats?", emoji: "🗑️", options: ["Drop it on the ground", "Put it in the garbage or recycle", "Throw it in the river", "Leave it in the forest"], answer: 1, feedback: "Trash can hurt habitats. Always put it in the garbage or recycling!" },
+      { q: "Why is it important to protect habitats?", emoji: "🛡️", options: ["So living things have a safe home", "So we can build more roads", "Because it looks nice", "To make more trash"], answer: 0, feedback: "Protecting habitats gives living things a safe place to live and grow!" },
+      { q: "If you see a bug, the best thing to do is...", emoji: "🐞", options: ["Squish it", "Watch it gently and leave it alone", "Put it in a jar forever", "Step on it"], answer: 1, feedback: "Bugs are living things too! We can watch them carefully without hurting them." }
+    ]
+  }
+];
+
+const ACTIVITY_META = {
+  learn: { label: "📖 Learn", short: "Learn" },
+  sort: { label: "🗂️ Sort", short: "Sort" },
+  match: { label: "🔗 Match", short: "Match" },
+  tf: { label: "✅ True/False", short: "T/F" },
+  quiz: { label: "❓ Quiz", short: "Quiz" }
+};
+function activitiesFor(exp) {
+  const list = ["learn"];
+  if (exp.sortGame) list.push("sort");
+  if (exp.matchGame) list.push("match");
+  if (exp.tfGame) list.push("tf");
+  list.push("quiz");
+  return list;
+}
+
+/* =========================================================
+   TIMER MANAGEMENT — prevents stale timers from breaking
+   other screens when the user navigates away
+   ========================================================= */
+const Timers = {
+  ids: [],
+  later(fn, ms) {
+    const id = setTimeout(() => {
+      this.ids = this.ids.filter(x => x !== id);
+      fn();
+    }, ms);
+    this.ids.push(id);
+    return id;
+  },
+  clearAll() {
+    this.ids.forEach(clearTimeout);
+    this.ids = [];
+  }
+};
+
+/* =========================================================
+   PROGRESS TRACKING — bumped to v3 to fix stale scores
+   ========================================================= */
+const STORAGE_KEY = "lt_progress_v3";
+let progress = {};
+function loadProgress() {
+  try {
+    const v3 = localStorage.getItem(STORAGE_KEY);
+    if (v3) { progress = JSON.parse(v3) || {}; return; }
+    // Migrate v2 → v3 (old scores blocked new ones)
+    const v2 = localStorage.getItem("lt_progress_v2");
+    if (v2) {
+      const o = JSON.parse(v2) || {};
+      Object.keys(o).forEach(code => {
+        progress[code] = {};
+        const p = o[code];
+        if (p.learn) progress[code].learn = p.learn;
+        if (p.sort) progress[code].sort = p.sort;
+        if (p.match) progress[code].match = p.match;
+        if (p.tf) progress[code].tf = p.tf;
+        if (p.quiz) progress[code].quiz = p.quiz;
+      });
+      saveProgress();
+    }
+  } catch (e) { progress = {}; }
+}
+function saveProgress() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); } catch (e) {}
+}
+function recordResult(code, activity, result) {
+  if (!progress[code]) progress[code] = {};
+  const prev = progress[code][activity];
+  if (prev) {
+    if (result.done && prev.done) return;
+    if (prev.total && result.total) {
+      if ((prev.score / prev.total) >= (result.score / result.total)) return;
+    }
+  }
+  progress[code][activity] = result;
+  saveProgress();
+}
+function activityFraction(code, activity) {
+  const r = (progress[code] || {})[activity];
+  if (!r) return 0;
+  if (r.done) return 1;
+  if (r.total) return r.score / r.total;
+  return 0;
+}
+function overallPercent(exp) {
+  const acts = activitiesFor(exp);
+  const sum = acts.reduce((s, a) => s + activityFraction(exp.code, a), 0);
+  return Math.round((sum / acts.length) * 100);
+}
+function resetAllProgress() {
+  if (!confirm("Erase all saved progress for every expectation?")) return;
+  progress = {};
+  saveProgress();
+  renderMenu();
+  speak("All progress has been reset.");
+}
+
+/* =========================================================
+   SOUND EFFECTS — fixed AudioContext suspend bug
+   ========================================================= */
+const SFX = {
+  enabled: true,
+  ctx: null,
+  init() {
+    if (this.ctx) return;
+    try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch (e) { console.warn('Web Audio not supported'); }
+  },
+  ensureResumed() {
+    if (this.ctx && this.ctx.state === 'suspended') {
+      try { this.ctx.resume(); } catch (e) {}
+    }
+  },
+  playTone(freq, duration, type = 'sine', volume = 0.3) {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+    this.ensureResumed();
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+    osc.start(this.ctx.currentTime);
+    osc.stop(this.ctx.currentTime + duration);
+  },
+  correct() {
+    if (!this.enabled) return;
+    this.init();
+    this.ensureResumed();
+    this.playTone(523.25, 0.15, 'sine', 0.25);
+    Timers.later(() => this.playTone(659.25, 0.2, 'sine', 0.25), 100);
+  },
+  wrong() {
+    if (!this.enabled) return;
+    this.init();
+    this.ensureResumed();
+    this.playTone(311.13, 0.3, 'sawtooth', 0.15);
+  },
+  success() {
+    if (!this.enabled) return;
+    this.init();
+    this.ensureResumed();
+    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+      Timers.later(() => this.playTone(freq, 0.2, 'sine', 0.2), i * 120);
+    });
+  },
+  click() {
+    if (!this.enabled) return;
+    this.init();
+    this.ensureResumed();
+    this.playTone(800, 0.05, 'square', 0.1);
+  }
+};
+// Unlock audio on first user gesture (browser requirement)
+document.addEventListener('pointerdown', () => SFX.init(), { once: true });
+
+function toggleSFX() {
+  SFX.enabled = !SFX.enabled;
+  const btn = document.getElementById('sfxToggle');
+  btn.setAttribute('aria-pressed', String(SFX.enabled));
+  if (SFX.enabled) {
+    btn.textContent = "🎵 Sounds: ON";
+    btn.classList.remove('off');
+    SFX.init();
+    SFX.ensureResumed();
+    SFX.click();
+  } else {
+    btn.textContent = "🔇 Sounds: OFF";
+    btn.classList.add('off');
+  }
+}
+
+/* =========================================================
+   TEXT TO SPEECH — robust chunked engine with generation
+   tokens to prevent stale callbacks from advancing the queue
+   ========================================================= */
+const TTS = {
+  enabled: true,
+  supported: ('speechSynthesis' in window),
+  kind: null,
+  priorityBusy: false,
+  lockUntil: 0,
+  hoverTimer: null,
+  voice: null,
+  queue: [],
+  speaking: false,
+  watchdog: null,
+  nextTimer: null,
+  gen: 0,
+
+  clean(text) {
+    if (!text) return "";
+    let t = String(text);
+    try { t = t.replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}\u{20E3}]/gu, " "); }
+    catch (e) { t = t.replace(/[\u2190-\u2BFF\uD800-\uDFFF]/g, " "); }
+    return t.replace(/\s+/g, " ").trim();
+  },
+  pickVoice() {
+    if (!this.supported) return;
+    const vs = speechSynthesis.getVoices() || [];
+    this.voice = vs.find(v => /en[-_]CA/i.test(v.lang))
+              || vs.find(v => /en[-_]US/i.test(v.lang))
+              || vs.find(v => /^en/i.test(v.lang)) || null;
+  },
+  hardStop() {
+    clearTimeout(this.hoverTimer);
+    clearTimeout(this.watchdog);
+    clearTimeout(this.nextTimer);
+    this.queue = [];
+    this.speaking = false;
+    this.kind = null;
+    this.priorityBusy = false;
+    this.gen++;
+    if (this.supported) { try { speechSynthesis.cancel(); } catch (e) {} }
+  },
+  blocked() { return this.priorityBusy || Date.now() < this.lockUntil; },
+
+  // Split at sentence boundaries; only split long sentences further
+  chunkText(text) {
+    // Lookbehind-free split: match sentences with their trailing punctuation
+    const sentences = text.match(/[^.!?]+[.!?]*/g) || [text];
+    const chunks = [];
+    for (const sentence of sentences) {
+      const words = sentence.split(/\s+/).filter(w => w.length > 0);
+      if (words.length <= 20) {
+        chunks.push(words.join(' '));
+      } else {
+        // Split long sentences into ~15-word chunks at word boundaries
+        let current = [];
+        for (const word of words) {
+          current.push(word);
+          if (current.length >= 15) {
+            chunks.push(current.join(' '));
+            current = [];
+          }
+        }
+        if (current.length > 0) chunks.push(current.join(' '));
+      }
+    }
+    return chunks.length > 0 ? chunks : [text];
+  },
+
+  say(text, opts) {
+    opts = opts || {};
+    if (!this.enabled || !this.supported) return;
+    const clean = this.clean(text);
+    if (!clean) return;
+
+    const isPriority = opts.priority !== false;
+    this.hardStop();
+
+    if (isPriority) {
+      this.kind = 'priority';
+      this.priorityBusy = true;
+    } else {
+      if (this.blocked()) return;
+      this.kind = 'hover';
+    }
+
+    this.queue = this.chunkText(clean);
+    this.gen++;
+    this.processQueue(this.gen);
+  },
+
+  processQueue(myGen) {
+    if (myGen !== this.gen) return; // stale call, ignore
+    if (this.queue.length === 0) {
+      this.speaking = false;
+      if (this.kind === 'priority') {
+        this.priorityBusy = false;
+        this.lockUntil = Date.now() + 300;
+      }
+      this.kind = null;
+      return;
+    }
+
+    this.speaking = true;
+    const chunk = this.queue.shift();
+    const u = new SpeechSynthesisUtterance(chunk);
+    u.rate = 0.9;
+    u.pitch = 1.05;
+    u.lang = (this.voice && this.voice.lang) || 'en-CA';
+    if (this.voice) u.voice = this.voice;
+
+    // Watchdog: if chunk takes too long, force-advance
+    clearTimeout(this.watchdog);
+    const estimatedMs = Math.max(2500, chunk.length * 90);
+    this.watchdog = Timers.later(() => {
+      if (myGen !== this.gen) return;
+      try { speechSynthesis.cancel(); } catch (e) {}
+      this.processQueue(myGen);
+    }, estimatedMs + 4000);
+
+    const finish = () => {
+      clearTimeout(this.watchdog);
+      if (myGen !== this.gen) return;
+      this.nextTimer = Timers.later(() => this.processQueue(myGen), 80);
+    };
+    u.onend = finish;
+    u.onerror = finish;
+
+    try { speechSynthesis.speak(u); }
+    catch (e) {
+      clearTimeout(this.watchdog);
+      if (myGen !== this.gen) return;
+      this.nextTimer = Timers.later(() => this.processQueue(myGen), 80);
+    }
+  },
+
+  scheduleHover(text) {
+    if (!this.enabled || !this.supported) return;
+    clearTimeout(this.hoverTimer);
+    if (this.blocked()) return;
+    const clean = this.clean(text);
+    if (!clean) return;
+    this.hoverTimer = Timers.later(() => {
+      if (this.blocked()) return;
+      this.say(clean, { priority: false });
+    }, 400);
+  },
+  cancelHover() {
+    clearTimeout(this.hoverTimer);
+    if (this.kind === 'hover') this.hardStop();
+  }
+};
+
+if (TTS.supported) {
+  TTS.pickVoice();
+  speechSynthesis.onvoiceschanged = () => TTS.pickVoice();
+}
+
+function speak(text) { TTS.say(text); }
+
+function toggleTTS() {
+  TTS.enabled = !TTS.enabled;
+  const btn = document.getElementById('ttsToggle');
+  btn.setAttribute('aria-pressed', String(TTS.enabled));
+  if (TTS.enabled) {
+    btn.textContent = "🔊 Read Aloud: ON";
+    btn.classList.remove('off');
+    speak("Read aloud is on.");
+  } else {
+    TTS.hardStop();
+    btn.textContent = "🔇 Read Aloud: OFF";
+    btn.classList.add('off');
+  }
+}
+
+function attachHoverSpeak(el, getText) {
+  if (!el) return;
+  const get = (typeof getText === "function") ? getText : () => getText;
+  el.classList.add('hover-speaks');
+  const start = () => TTS.scheduleHover(get());
+  const end = () => TTS.cancelHover();
+  el.addEventListener('pointerenter', e => {
+    if (e.pointerType === 'mouse' || e.pointerType === 'pen') start();
+  });
+  el.addEventListener('pointerleave', end);
+  el.addEventListener('focus', start);
+  el.addEventListener('blur', end);
+}
+
+/* =========================================================
+   MENU
+   ========================================================= */
+let currentExpectation = null;
+let currentTab = "learn";
+
+function renderMenu() {
+  const grid = document.getElementById('menuGrid');
+  grid.innerHTML = '';
+  expectations.forEach(exp => {
+    const pct = overallPercent(exp);
+    const badges = activitiesFor(exp).map(a => {
+      const f = activityFraction(exp.code, a);
+      const done = f >= 0.8;
+      return `<span class="badge ${done ? 'done' : ''}">${done ? '✓' : '○'} ${ACTIVITY_META[a].short}</span>`;
+    }).join('');
+    const card = document.createElement('div');
+    card.className = 'menu-card';
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `${exp.code} ${exp.title}. ${pct} percent complete.`);
+    card.innerHTML = `
+      <span class="emoji" aria-hidden="true">${exp.emoji}</span>
+      <div class="code">${exp.code}</div>
+      <div class="title">${exp.title}</div>
+      <div class="desc">${exp.description}</div>
+      <div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div>
+      <div class="desc">${pct > 0 ? pct + '% complete' : 'Not started'}</div>
+      <div class="badges">${badges}</div>`;
+    card.onclick = () => { SFX.click(); openExpectation(exp.code); };
+    card.onkeydown = e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); SFX.click(); openExpectation(exp.code); }
+    };
+    attachHoverSpeak(card, `${exp.title}. ${exp.description}`);
+    grid.appendChild(card);
+  });
+}
+
+function goToMenu() {
+  Timers.clearAll();
+  TTS.hardStop();
+  document.getElementById('menuScreen').classList.add('active');
+  document.getElementById('activityScreen').classList.remove('active');
+  renderMenu();
+}
+
+function openExpectation(code) {
+  currentExpectation = expectations.find(e => e.code === code);
+  currentTab = "learn";
+  document.getElementById('menuScreen').classList.remove('active');
+  document.getElementById('activityScreen').classList.add('active');
+  document.getElementById('activityTitle').textContent =
+    `${currentExpectation.emoji} ${currentExpectation.code}: ${currentExpectation.title}`;
+  renderTabs();
+  renderTab();
+}
+
+function renderTabs() {
+  const tabs = document.getElementById('activityTabs');
+  tabs.innerHTML = '';
+  activitiesFor(currentExpectation).forEach(id => {
+    const f = activityFraction(currentExpectation.code, id);
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (id === currentTab ? ' active' : '');
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', String(id === currentTab));
+    btn.textContent = ACTIVITY_META[id].label + (f >= 0.8 ? ' ✓' : '');
+    btn.onclick = () => { SFX.click(); currentTab = id; renderTabs(); renderTab(); };
+    tabs.appendChild(btn);
+  });
+}
+
+function renderTab() {
+  Timers.clearAll();
+  TTS.hardStop();
+  const c = document.getElementById('activityContent');
+  c.innerHTML = '';
+  if (currentTab === "learn") renderLearn(c);
+  else if (currentTab === "quiz") renderQuiz(c);
+  else if (currentTab === "sort") renderSort(c);
+  else if (currentTab === "match") renderMatch(c);
+  else if (currentTab === "tf") renderTF(c);
+}
+
+/* =========================================================
+   LEARN
+   ========================================================= */
+let learnIndex = 0;
+function renderLearn(container) {
+  if (!currentExpectation.vocab || !currentExpectation.vocab.length) {
+    container.innerHTML = `<p style="text-align:center;font-size:1.2em;">Try another activity!</p>`;
+    return;
+  }
+  learnIndex = 0;
+  showLearnCard(container);
+}
+function showLearnCard(container) {
+  const vocab = currentExpectation.vocab;
+  const item = vocab[learnIndex];
+  container.innerHTML = `
+    <div class="learn-card" id="learnCard">
+      <span class="big-emoji" aria-hidden="true">${item.emoji}</span>
+      <h2>${item.word}</h2>
+      <p>${item.def}</p>
+      <button class="speak-btn" id="hearBtn">🔊 Hear It Again</button>
+    </div>
+    <div style="text-align:center;color:#666;">Card ${learnIndex + 1} of ${vocab.length}</div>
+    <div class="nav-btns">
+      <button class="nav-btn" id="prevBtn" ${learnIndex === 0 ? 'disabled' : ''}>← Previous</button>
+      <button class="nav-btn" id="nextBtn">${learnIndex === vocab.length - 1 ? '✓ Done' : 'Next →'}</button>
+    </div>`;
+  const text = `${item.word}. ${item.def}`;
+  attachHoverSpeak(document.getElementById('learnCard'), text);
+  document.getElementById('hearBtn').onclick = () => { SFX.click(); speak(text); };
+  document.getElementById('prevBtn').onclick = () => {
+    if (learnIndex > 0) { SFX.click(); learnIndex--; showLearnCard(container); }
+  };
+  document.getElementById('nextBtn').onclick = () => {
+    SFX.click();
+    if (learnIndex < vocab.length - 1) { learnIndex++; showLearnCard(container); return; }
+    recordResult(currentExpectation.code, "learn", { done: true });
+    SFX.success();
+    speak("Great job! You finished learning. Now try an activity!");
+    Timers.later(goToMenu, 1600);
+  };
+  speak(text);
+}
+
+/* =========================================================
+   QUIZ — child controls pace on wrong answers
+   ========================================================= */
+let quizIndex = 0, quizScore = 0, quizAnswered = false;
+function renderQuiz(container) {
+  quizIndex = 0;
+  quizScore = 0;
+  showQuizQuestion(container);
+}
+function showQuizQuestion(container) {
+  const qs = currentExpectation.quiz;
+  if (quizIndex >= qs.length) {
+    recordResult(currentExpectation.code, "quiz", { score: quizScore, total: qs.length });
+    const pct = Math.round((quizScore / qs.length) * 100);
+    const msg = pct === 100 ? "Perfect! You're a science superstar!"
+              : pct >= 70 ? "Great job! You know your stuff!"
+              : pct >= 50 ? "Good try! Let's learn a bit more!"
+              : "Keep practicing! You'll get it!";
+    container.innerHTML = `
+      <div class="score-box">
+        <h2>Quiz Complete!</h2>
+        <div class="score-num">${quizScore} / ${qs.length}</div>
+        <div style="font-size:1.2em;">${msg}</div>
+        <button class="nav-btn" style="margin-top:20px;" onclick="renderTab()">🔁 Try Again</button>
+        <button class="nav-btn" style="margin-top:10px;background:#118ab2;" onclick="goToMenu()">🏠 Menu</button>
+      </div>`;
+    if (pct === 100) SFX.success();
+    speak(`You got ${quizScore} out of ${qs.length}. ${msg}`);
+    renderTabs();
+    return;
+  }
+  quizAnswered = false;
+  const q = qs[quizIndex];
+  container.innerHTML = `
+    <div class="quiz-question">
+      <span class="q-emoji" aria-hidden="true">${q.emoji}</span>
+      <div>${q.q}</div>
+      <div class="q-count">Question ${quizIndex + 1} of ${qs.length}</div>
+    </div>
+    <div class="quiz-options" id="quizOptions"></div>
+    <div class="feedback" id="feedback" role="status" aria-live="polite" style="display:none;"></div>`;
+  const opts = document.getElementById('quizOptions');
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('div');
+    btn.className = 'quiz-option';
+    btn.textContent = opt;
+    btn.tabIndex = 0;
+    btn.setAttribute('role', 'button');
+    btn.onclick = () => handleQuizAnswer(i, q.answer, container, btn);
+    btn.onkeydown = e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleQuizAnswer(i, q.answer, container, btn); }
+    };
+    attachHoverSpeak(btn, () => quizAnswered ? "" : opt);
+    opts.appendChild(btn);
+  });
+  speak(q.q);
+}
+function handleQuizAnswer(chosen, correct, container) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = currentExpectation.quiz[quizIndex];
+  document.querySelectorAll('.quiz-option').forEach((o, i) => {
+    o.onclick = null;
+    o.onkeydown = null;
+    o.tabIndex = -1;
+    o.classList.add('locked');
+    if (i === correct) o.classList.add('correct');
+    else if (i === chosen) o.classList.add('wrong');
+  });
+  const fb = document.getElementById('feedback');
+  fb.style.display = 'block';
+  const right = chosen === correct;
+
+  if (right) {
+    quizScore++;
+    SFX.correct();
+    fb.className = 'feedback good';
+    fb.innerHTML = `<span class="fb-title">✅ Correct! Great job!</span>`;
+    speak("Correct! Great job!");
+    // Auto-advance after 1.5s for correct answers
+    Timers.later(() => { quizIndex++; showQuizQuestion(container); }, 1500);
+  } else {
+    SFX.wrong();
+    fb.className = 'feedback bad';
+    const explain = q.feedback || "Let's keep learning!";
+    const safeExplain = explain.replace(/'/g, "\\'");
+    const safeAnswer = q.options[correct].replace(/'/g, "\\'");
+    fb.innerHTML = `
+      <span class="fb-title">❌ Not quite!</span>
+      <span class="fb-explain">The correct answer is <strong>${q.options[correct]}</strong>.<br>${explain}</span>
+      <div class="fb-actions">
+        <button class="speak-btn" id="replayBtn">🔊 Hear It Again</button>
+        <button class="nav-btn" id="nextQBtn">Next Question →</button>
+      </div>`;
+    document.getElementById('replayBtn').onclick = () =>
+      speak(`The correct answer is ${q.options[correct]}. ${explain}`);
+    document.getElementById('nextQBtn').onclick = () => {
+      quizIndex++;
+      showQuizQuestion(container);
+    };
+    speak(`Not quite. The correct answer is ${q.options[correct]}. ${explain}`);
+    // NO auto-advance — child controls pace
+  }
+}
+
+/* =========================================================
+   SORT GAME — fixed tap-to-reselect bug on touch
+   ========================================================= */
+let sortChecked = false, selectedSortItem = null;
+function binLabel(bin) {
+  return { living: "Living", "non-living": "Non-Living", plant: "Plants", animal: "Animals", both: "Both", tray: "the card tray" }[bin] || bin;
+}
+function binHeading(bin) {
+  return { living: "🌱 Living", "non-living": "🪨 Non-Living", plant: "🌻 Plants", animal: "🐾 Animals", both: "💧 Both" }[bin] || bin;
+}
+function renderSort(container) {
+  const game = currentExpectation.sortGame;
+  if (!game) return;
+  sortChecked = false;
+  selectedSortItem = null;
+  const bins = game.bins || ["living", "non-living"];
+  container.innerHTML = `
+    <div class="sort-instruction">👆 Tap a card, then tap a group. Or drag it!</div>
+    <div class="items-to-sort" id="itemsToSort" data-bin="tray"></div>
+    <div class="sort-bins bins-${bins.length}" id="sortBins"></div>
+    <div class="feedback" id="sortFeedback" role="status" aria-live="polite" style="display:none;"></div>
+    <div style="text-align:center;margin-top:15px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button class="nav-btn" id="checkSortBtn">✓ Check My Work</button>
+      <button class="nav-btn" style="background:#118ab2;" onclick="renderTab()">🔁 Reset</button>
+    </div>`;
+  const tray = document.getElementById('itemsToSort');
+  [...game.items].sort(() => Math.random() - 0.5).forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'sort-item';
+    el.textContent = item.name;
+    el.tabIndex = 0;
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-label', TTS.clean(item.name) + ". Tap to pick up, then choose a group.");
+    el.dataset.correct = game.bins ? item.living : (item.living ? "living" : "non-living");
+    el.dataset.idx = i;
+    makeSortItemInteractive(el);
+    attachHoverSpeak(el, () => sortChecked ? "" : item.name);
+    tray.appendChild(el);
+  });
+  const binsDiv = document.getElementById('sortBins');
+  bins.forEach(bin => {
+    const binEl = document.createElement('div');
+    binEl.className = 'sort-bin';
+    binEl.dataset.bin = bin;
+    binEl.tabIndex = 0;
+    binEl.setAttribute('role', 'button');
+    binEl.setAttribute('aria-label', binLabel(bin) + " group");
+    binEl.innerHTML = `<h3>${binHeading(bin)}</h3><div class="bin-items"></div>`;
+    binEl.onclick = (e) => {
+      if (sortChecked) return;
+      // Don't auto-place if the click landed on a sort-item (it handles itself)
+      if (e.target.closest('.sort-item')) return;
+      if (selectedSortItem) { SFX.click(); placeItem(selectedSortItem, binEl); }
+      else speak(binLabel(bin) + " group. Pick a card first.");
+    };
+    binEl.onkeydown = e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); binEl.click(); }
+    };
+    attachHoverSpeak(binEl, () => selectedSortItem ? `Put it in ${binLabel(bin)}` : binLabel(bin) + " group");
+    binsDiv.appendChild(binEl);
+  });
+  tray.onclick = e => {
+    if (e.target === tray && selectedSortItem) { SFX.click(); placeItem(selectedSortItem, tray); }
+  };
+  document.getElementById('checkSortBtn').onclick = () => { SFX.click(); checkSort(); };
+  speak("Tap a card, then tap a group. You can also drag the cards.");
+}
+function makeSortItemInteractive(el) {
+  let startX = 0, startY = 0, dragging = false, ghost = null, activeId = null;
+  const cleanup = () => {
+    if (ghost) { ghost.remove(); ghost = null; }
+    el.classList.remove('dragging');
+    document.querySelectorAll('.drag-over').forEach(b => b.classList.remove('drag-over'));
+    dragging = false;
+    activeId = null;
+  };
+  const targetAt = (x, y) => {
+    const t = document.elementFromPoint(x, y);
+    return t ? t.closest('[data-bin]') : null;
+  };
+  el.addEventListener('pointerdown', e => {
+    if (sortChecked) return;
+    activeId = e.pointerId;
+    startX = e.clientX;
+    startY = e.clientY;
+    dragging = false;
+    try { el.setPointerCapture(activeId); } catch (err) {}
+  });
+  el.addEventListener('pointermove', e => {
+    if (activeId === null || e.pointerId !== activeId || sortChecked) return;
+    if (!dragging && Math.hypot(e.clientX - startX, e.clientY - startY) > 10) {
+      dragging = true;
+      TTS.cancelHover();
+      clearSelection();
+      ghost = document.createElement('div');
+      ghost.className = 'drag-ghost';
+      ghost.textContent = el.textContent;
+      document.body.appendChild(ghost);
+      el.classList.add('dragging');
+    }
+    if (dragging) {
+      e.preventDefault();
+      ghost.style.left = e.clientX + 'px';
+      ghost.style.top = e.clientY + 'px';
+      document.querySelectorAll('.drag-over').forEach(b => b.classList.remove('drag-over'));
+      const t = targetAt(e.clientX, e.clientY);
+      if (t) t.classList.add('drag-over');
+    }
+  });
+  el.addEventListener('pointerup', e => {
+    if (activeId === null || e.pointerId !== activeId) return;
+    try { el.releasePointerCapture(activeId); } catch (err) {}
+    if (dragging) {
+      const t = targetAt(e.clientX, e.clientY);
+      cleanup();
+      if (t) { SFX.click(); placeItem(el, t); }
+    } else {
+      cleanup();
+      SFX.click();
+      toggleSelect(el);
+    }
+    // Prevent the synthesized click from bubbling to binEl.onclick
+    e.stopPropagation();
+  });
+  el.addEventListener('pointercancel', cleanup);
+  el.addEventListener('keydown', e => {
+    if (sortChecked) return;
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); SFX.click(); toggleSelect(el); }
+    if (e.key === 'Escape') clearSelection();
+  });
+}
+function clearSelection() {
+  if (selectedSortItem) selectedSortItem.classList.remove('selected');
+  selectedSortItem = null;
+  document.querySelectorAll('.sort-bin').forEach(b => b.classList.remove('armed'));
+}
+function toggleSelect(el) {
+  if (selectedSortItem === el) { clearSelection(); speak("Put down."); return; }
+  clearSelection();
+  selectedSortItem = el;
+  el.classList.add('selected');
+  document.querySelectorAll('.sort-bin').forEach(b => b.classList.add('armed'));
+  speak(`${TTS.clean(el.textContent)} picked up. Now tap a group.`);
+}
+function placeItem(el, binEl) {
+  const holder = binEl.dataset.bin === "tray" ? binEl : binEl.querySelector('.bin-items');
+  if (!holder) return;
+  holder.appendChild(el);
+  clearSelection();
+  el.focus({ preventScroll: true });
+  speak(`${TTS.clean(el.textContent)} goes in ${binLabel(binEl.dataset.bin)}.`);
+}
+function checkSort() {
+  if (sortChecked) return;
+  clearSelection();
+  const game = currentExpectation.sortGame;
+  const total = game.items.length;
+  let correct = 0, unsorted = 0;
+  document.querySelectorAll('.sort-item').forEach(item => {
+    const holder = item.closest('[data-bin]');
+    const where = holder ? holder.dataset.bin : "tray";
+    if (where === "tray") {
+      unsorted++;
+    } else if (where === item.dataset.correct) {
+      correct++;
+    }
+    const chip = document.createElement('div');
+    let chipClass = 'bin-item';
+    if (where === "tray") chipClass += ' unsorted';
+    else if (where !== item.dataset.correct) chipClass += ' wrong';
+    chip.className = chipClass;
+    chip.textContent = item.textContent;
+    item.replaceWith(chip);
+  });
+  sortChecked = true;
+  recordResult(currentExpectation.code, "sort", { score: correct, total });
+  renderTabs();
+  const fb = document.getElementById('sortFeedback');
+  fb.style.display = 'block';
+  let msg;
+  if (correct === total) {
+    fb.className = 'feedback good';
+    msg = `🎉 Perfect! All ${total} cards are in the right group!`;
+    SFX.success();
+  } else {
+    fb.className = 'feedback bad';
+    msg = `You got ${correct} out of ${total}.`;
+    if (unsorted) msg += ` ${unsorted} card${unsorted > 1 ? 's were' : ' was'} left in the tray.`;
+    if (correct < total - unsorted) msg += ` Yellow cards are not sorted. Red cards are in the wrong group. Tap Reset to try again!`;
+    else msg += ` Tap Reset to try again!`;
+    SFX.wrong();
+  }
+  fb.textContent = msg;
+  speak(msg);
+}
+
+/* =========================================================
+   MATCH GAME
+   ========================================================= */
+let matchCards = [], matchFlipped = [], matchMatched = 0, matchBusy = false;
+function renderMatch(container) {
+  const pairs = currentExpectation.matchGame;
+  if (!pairs) return;
+  matchCards = [];
+  matchFlipped = [];
+  matchMatched = 0;
+  matchBusy = false;
+  pairs.forEach((p, i) => {
+    matchCards.push({ id: i, display: p.a });
+    matchCards.push({ id: i, display: p.b });
+  });
+  matchCards.sort(() => Math.random() - 0.5);
+  container.innerHTML = `
+    <div class="sort-instruction">🔗 Find the matching pairs! Tap two cards.</div>
+    <div class="match-grid" id="matchGrid"></div>
+    <div class="feedback" id="matchFeedback" role="status" aria-live="polite" style="display:none;"></div>`;
+  const grid = document.getElementById('matchGrid');
+  matchCards.forEach((c, i) => {
+    const card = document.createElement('div');
+    card.className = 'match-card';
+    card.textContent = '?';
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', 'Hidden card');
+    card.onclick = () => { SFX.click(); flipCard(card, i); };
+    card.onkeydown = e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); SFX.click(); flipCard(card, i); }
+    };
+    attachHoverSpeak(card, () =>
+      (card.classList.contains('flipped') || card.classList.contains('matched')) ? c.display : "");
+    grid.appendChild(card);
+  });
+  speak("Find the matching pairs. Tap two cards.");
+}
+function flipCard(cardEl, idx) {
+  if (matchBusy) return;
+  if (cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
+  cardEl.classList.add('flipped');
+  cardEl.textContent = matchCards[idx].display;
+  cardEl.setAttribute('aria-label', TTS.clean(matchCards[idx].display));
+  speak(matchCards[idx].display);
+  matchFlipped.push({ el: cardEl, idx, id: matchCards[idx].id });
+  if (matchFlipped.length < 2) return;
+  matchBusy = true;
+  const [a, b] = matchFlipped;
+  const isMatch = a.id === b.id && a.idx !== b.idx;
+  Timers.later(() => {
+    if (isMatch) {
+      a.el.classList.add('matched');
+      b.el.classList.add('matched');
+      SFX.correct();
+      matchMatched++;
+      if (matchMatched === currentExpectation.matchGame.length) {
+        recordResult(currentExpectation.code, "match", { done: true });
+        renderTabs();
+        const fb = document.getElementById('matchFeedback');
+        fb.style.display = 'block';
+        fb.className = 'feedback good';
+        fb.textContent = "🎉 You matched them all!";
+        SFX.success();
+        speak("You matched them all! Great job!");
+      }
+    } else {
+      SFX.wrong();
+      [a, b].forEach(x => {
+        x.el.classList.remove('flipped');
+        x.el.textContent = '?';
+        x.el.setAttribute('aria-label', 'Hidden card');
+      });
+    }
+    matchFlipped = [];
+    matchBusy = false;
+  }, isMatch ? 700 : 1200);
+}
+
+/* =========================================================
+   TRUE / FALSE
+   ========================================================= */
+let tfIndex = 0, tfScore = 0, tfAnswered = false;
+function renderTF(container) {
+  tfIndex = 0;
+  tfScore = 0;
+  showTFQuestion(container);
+}
+function showTFQuestion(container) {
+  const game = currentExpectation.tfGame;
+  if (tfIndex >= game.length) {
+    recordResult(currentExpectation.code, "tf", { score: tfScore, total: game.length });
+    renderTabs();
+    container.innerHTML = `
+      <div class="score-box">
+        <h2>True or False Done!</h2>
+        <div class="score-num">${tfScore} / ${game.length}</div>
+        <button class="nav-btn" style="margin-top:20px;" onclick="renderTab()">🔁 Try Again</button>
+        <button class="nav-btn" style="margin-top:10px;background:#118ab2;" onclick="goToMenu()">🏠 Menu</button>
+      </div>`;
+    const pct = Math.round((tfScore / game.length) * 100);
+    if (pct === 100) SFX.success();
+    speak(`You got ${tfScore} out of ${game.length}.`);
+    return;
+  }
+  tfAnswered = false;
+  const q = game[tfIndex];
+  container.innerHTML = `
+    <div class="quiz-question">
+      <span class="q-emoji" aria-hidden="true">${q.emoji}</span>
+      <div>${q.statement}</div>
+      <div class="q-count">Question ${tfIndex + 1} of ${game.length}</div>
+    </div>
+    <div class="tf-buttons">
+      <button class="tf-btn tf-true" id="tfTrue">✅ True</button>
+      <button class="tf-btn tf-false" id="tfFalse">❌ False</button>
+    </div>
+    <div class="feedback" id="tfFeedback" role="status" aria-live="polite" style="display:none;"></div>`;
+  const t = document.getElementById('tfTrue'), f = document.getElementById('tfFalse');
+  t.onclick = () => { SFX.click(); handleTF(true); };
+  f.onclick = () => { SFX.click(); handleTF(false); };
+  attachHoverSpeak(t, () => tfAnswered ? "" : "True");
+  attachHoverSpeak(f, () => tfAnswered ? "" : "False");
+  speak(q.statement + " True or false?");
+}
+function handleTF(answer) {
+  if (tfAnswered) return;
+  tfAnswered = true;
+  const q = currentExpectation.tfGame[tfIndex];
+  document.querySelectorAll('.tf-btn').forEach(b => { b.onclick = null; b.disabled = true; });
+  const right = answer === q.answer;
+  if (right) {
+    tfScore++;
+    SFX.correct();
+    const fb = document.getElementById('tfFeedback');
+    fb.style.display = 'block';
+    fb.className = 'feedback good';
+    fb.textContent = "✅ Correct!";
+    speak("Correct!");
+  } else {
+    SFX.wrong();
+    const fb = document.getElementById('tfFeedback');
+    fb.style.display = 'block';
+    fb.className = 'feedback bad';
+    fb.textContent = `❌ The answer was ${q.answer ? 'True' : 'False'}.`;
+    speak(`The answer was ${q.answer ? 'True' : 'False'}.`);
+  }
+  Timers.later(() => {
+    tfIndex++;
+    showTFQuestion(document.getElementById('activityContent'));
+  }, 2200);
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+loadProgress();
+window.addEventListener('load', () => {
+  SFX.init();
+  renderMenu();
+  speak("Welcome to Living Things! Pick a card to start learning.");
+});
+window.addEventListener('pagehide', () => {
+  Timers.clearAll();
+  TTS.hardStop();
+});
+</script>
+</body>
+</html>
